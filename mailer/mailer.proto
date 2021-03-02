@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package mailer;
+
+option go_package="monjjubot/mailer";
+
+message emailRequest {
+  string email = 1;
+  string message = 2;
+}
+
+message emailResponse {
+  bool status = 1;
+}
+
+service EmailSendingService{
+  //Unary
+  rpc sendEmail(emailRequest) returns (emailResponse) {};
+}
