@@ -14,5 +14,6 @@ func main(){
 	if err != nil{
 		log.Println("Error when creating a bot instance occured", err)
 	}
+	log.Println("TG bot is running")
 	Bot_handler_init(bot)
 }
