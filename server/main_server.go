@@ -8,15 +8,18 @@ import (
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"log"
+	"monjjubot/databaseproto"
 	"monjjubot/mailer"
 	"monjjubot/request"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 )
 
 type Server struct {
 	request.UnimplementedTelegramBotServiceServer
+
 	server_address string
 	server_domain_name string
 	website_server_port string
@@ -46,24 +49,37 @@ func connectToMailer(email string, message string) (response bool){
 	defer conn.Close()
 
 	c := mailer.NewEmailSendingServiceClient(conn)
-	response = sendEmailForReg(c, email, message)
-	return response
-
-}
-
-func sendEmailForReg(client mailer.EmailSendingServiceClient, email string, message string) (response bool){
 	ctx := context.Background()
 	req := &mailer.EmailRequest{Email: email, Message: message}
 
-	res, err := client.SendEmail(ctx, req)
+	res, err := c.SendEmail(ctx, req)
 	if err!=nil{
 		log.Fatalln("Error when getting response from mailer_server: ",err)
 	}
 	response = res.Status
 	return response
+
 }
 
-//Greet is an example of unary rpc call
+func connectToDatabase(course_id int64, subject string) *databaseproto.BigResponse {
+	fmt.Println("ClientConnectedToDatabase")
+	_ = godotenv.Load("globals.env")
+	port := os.Getenv("DATABASE_SERVER_PORT")
+	address := os.Getenv("SERVER_ADDRESS")
+	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("could not connect: %v", err)
+	}
+	defer conn.Close()
+
+	c:=databaseproto.NewDatabaseAccessServiceClient(conn)
+	ctx := context.Background()
+	req := &databaseproto.BookRequest{CourseId: course_id, Subject: subject}
+	response, _ := c.CourseRequest(ctx,req)
+	return response
+}
+
+
 func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest) (*request.CommandPackResponse, error) {
 	command:=req.Command
 	param := ""
@@ -72,6 +88,21 @@ func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest
 	res := &request.CommandPackResponse{Status: false, Response: "Unknown command, use /guide to see available commands"}
 
 	switch command {
+		case "/get":
+			if param==""{
+				res.Status = true
+				res.Response = "the Course parameter is empty"
+				break
+			}
+			res.Status = true
+			course_id, _ := strconv.ParseInt(param, 10, 32)
+			response_books := connectToDatabase(course_id, "")
+			books_array := response_books.BookPacks
+			res.Response = ""
+			for _,s := range books_array{
+				res.Response = res.Response + s.Subject + s.BookLink + s.BookLink + "\n"
+			}
+
 		case "/start":
 			res.Status = true
 			res.Response = "Hello new user"

@@ -3,21 +3,22 @@ package main
 import (
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"monjjubot/databaseproto"
 )
 
 type SnippetModel struct {
 	DB *pgxpool.Pool
 }
 
-type Book struct {
+type BookPack struct {
 	book_id   int
 	course_id int
-	subject   string
+	subject string
 	book_name string
 	book_link string
 }
 
-func (m *SnippetModel) getByCourse(course_id int) ([]*Book, error) {
+func (m *SnippetModel) getByCourse(course_id int) ([]*databaseproto.BookPack, error) {
 	stmt := "SELECT * FROM books WHERE course_id = $1"
 
 	rows, err := m.DB.Query(context.Background(), stmt, course_id)
@@ -27,13 +28,43 @@ func (m *SnippetModel) getByCourse(course_id int) ([]*Book, error) {
 
 	defer rows.Close()
 
-	books := []*Book{}
+	var books []*databaseproto.BookPack
 
 	for rows.Next() {
 
-		s := &Book{}
+		s := &databaseproto.BookPack{}
 
-		err = rows.Scan(&s.book_id, &s.course_id, &s.subject, &s.book_name, &s.book_link)
+		err = rows.Scan(&s.BookId, &s.CourseId, &s.Subject, &s.BookName, &s.BookLink)
+		if err != nil {
+			return nil, err
+		}
+
+		books = append(books, s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return books, nil
+}
+
+func (m *SnippetModel) getBySubject(course_id int, subject string) ([]*databaseproto.BookPack, error) {
+	stmt := "SELECT * FROM books WHERE course_id = $1 and subject = $2"
+
+	rows, err := m.DB.Query(context.Background(), stmt, course_id, subject)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var books []*databaseproto.BookPack
+
+	for rows.Next() {
+
+		s := &databaseproto.BookPack{}
+
+		err = rows.Scan(&s.BookId, &s.CourseId, &s.Subject, &s.BookName, &s.BookLink)
 		if err != nil {
 			return nil, err
 		}

@@ -4,13 +4,18 @@ package mailer;
 
 option go_package="monjjubot/databaseproto";
 
-message courseRequest {
-  string id = 1;
+message bookRequest {
+  int64 course_id = 1;
+  string subject = 2;
 }
 
 message bigResponse {
-  int32 book_id = 1;
-  int32 course_id = 2;
+  repeated BookPack bookPacks = 1;
+}
+
+message BookPack{
+  int64 book_id = 1;
+  int64 course_id = 2;
   string subject = 3;
   string book_name = 4;
   string book_link = 5;
@@ -18,5 +23,5 @@ message bigResponse {
 
 service DatabaseAccessService{
   //Stream response
-  rpc CourseRequest(courseRequest) returns (stream bigResponse) {};
+  rpc CourseRequest(bookRequest) returns (bigResponse) {};
 }

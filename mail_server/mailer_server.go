@@ -15,6 +15,7 @@ type Server struct {
 	mailer.UnimplementedEmailSendingServiceServer
 }
 
+
 func(s *Server) SendEmail(ctx context.Context,request *mailer.EmailRequest) (*mailer.EmailResponse, error) {
 	email_address := request.Email
 	email_message := request.Message

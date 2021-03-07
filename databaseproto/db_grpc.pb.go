@@ -19,7 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DatabaseAccessServiceClient interface {
 	//Stream response
-	CourseRequest(ctx context.Context, in *CourseRequest, opts ...grpc.CallOption) (DatabaseAccessService_CourseRequestClient, error)
+	CourseRequest(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error)
 }
 
 type databaseAccessServiceClient struct {
@@ -30,36 +30,13 @@ func NewDatabaseAccessServiceClient(cc grpc.ClientConnInterface) DatabaseAccessS
 	return &databaseAccessServiceClient{cc}
 }
 
-func (c *databaseAccessServiceClient) CourseRequest(ctx context.Context, in *CourseRequest, opts ...grpc.CallOption) (DatabaseAccessService_CourseRequestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &DatabaseAccessService_ServiceDesc.Streams[0], "/mailer.DatabaseAccessService/CourseRequest", opts...)
+func (c *databaseAccessServiceClient) CourseRequest(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error) {
+	out := new(BigResponse)
+	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/CourseRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &databaseAccessServiceCourseRequestClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type DatabaseAccessService_CourseRequestClient interface {
-	Recv() (*BigResponse, error)
-	grpc.ClientStream
-}
-
-type databaseAccessServiceCourseRequestClient struct {
-	grpc.ClientStream
-}
-
-func (x *databaseAccessServiceCourseRequestClient) Recv() (*BigResponse, error) {
-	m := new(BigResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // DatabaseAccessServiceServer is the server API for DatabaseAccessService service.
@@ -67,7 +44,7 @@ func (x *databaseAccessServiceCourseRequestClient) Recv() (*BigResponse, error) 
 // for forward compatibility
 type DatabaseAccessServiceServer interface {
 	//Stream response
-	CourseRequest(*CourseRequest, DatabaseAccessService_CourseRequestServer) error
+	CourseRequest(context.Context, *BookRequest) (*BigResponse, error)
 	mustEmbedUnimplementedDatabaseAccessServiceServer()
 }
 
@@ -75,8 +52,8 @@ type DatabaseAccessServiceServer interface {
 type UnimplementedDatabaseAccessServiceServer struct {
 }
 
-func (UnimplementedDatabaseAccessServiceServer) CourseRequest(*CourseRequest, DatabaseAccessService_CourseRequestServer) error {
-	return status.Errorf(codes.Unimplemented, "method CourseRequest not implemented")
+func (UnimplementedDatabaseAccessServiceServer) CourseRequest(context.Context, *BookRequest) (*BigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CourseRequest not implemented")
 }
 func (UnimplementedDatabaseAccessServiceServer) mustEmbedUnimplementedDatabaseAccessServiceServer() {}
 
@@ -91,25 +68,22 @@ func RegisterDatabaseAccessServiceServer(s grpc.ServiceRegistrar, srv DatabaseAc
 	s.RegisterService(&DatabaseAccessService_ServiceDesc, srv)
 }
 
-func _DatabaseAccessService_CourseRequest_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CourseRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
+func _DatabaseAccessService_CourseRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
 	}
-	return srv.(DatabaseAccessServiceServer).CourseRequest(m, &databaseAccessServiceCourseRequestServer{stream})
-}
-
-type DatabaseAccessService_CourseRequestServer interface {
-	Send(*BigResponse) error
-	grpc.ServerStream
-}
-
-type databaseAccessServiceCourseRequestServer struct {
-	grpc.ServerStream
-}
-
-func (x *databaseAccessServiceCourseRequestServer) Send(m *BigResponse) error {
-	return x.ServerStream.SendMsg(m)
+	if interceptor == nil {
+		return srv.(DatabaseAccessServiceServer).CourseRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mailer.DatabaseAccessService/CourseRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseAccessServiceServer).CourseRequest(ctx, req.(*BookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // DatabaseAccessService_ServiceDesc is the grpc.ServiceDesc for DatabaseAccessService service.
@@ -118,13 +92,12 @@ func (x *databaseAccessServiceCourseRequestServer) Send(m *BigResponse) error {
 var DatabaseAccessService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "mailer.DatabaseAccessService",
 	HandlerType: (*DatabaseAccessServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "CourseRequest",
-			Handler:       _DatabaseAccessService_CourseRequest_Handler,
-			ServerStreams: true,
+			MethodName: "CourseRequest",
+			Handler:    _DatabaseAccessService_CourseRequest_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "databaseproto/db.proto",
 }
