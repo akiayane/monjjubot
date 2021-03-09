@@ -100,7 +100,7 @@ func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest
 			books_array := response_books.BookPacks
 			res.Response = ""
 			for _,s := range books_array{
-				res.Response = res.Response + s.Subject + s.BookLink + s.BookLink + "\n"
+				res.Response = res.Response + s.Subject + " " + s.BookName + ": " + s.BookLink + "\n"
 			}
 
 		case "/start":

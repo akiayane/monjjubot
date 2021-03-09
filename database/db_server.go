@@ -39,12 +39,12 @@ func(s *Server) CourseRequest(ctx context.Context, request *databaseproto.BookRe
 
 	err := errors.New("empty error")
 	if subject==""{
-		books, err = s.getBySubject(int(course_id), subject)
+		books, err = s.getByCourse(int(course_id))
 		if err!=nil{
 			log.Println("Error occurred while calling getBySubject function on Database_Access_Server", err)
 		}
 	} else {
-		books, err = s.getByCourse(int(course_id))
+		books, err = s.getBySubject(int(course_id), subject)
 		if err!=nil{
 			log.Println("Error occurred while calling getByCourse function on Database_Access_Server", err)
 		}
@@ -69,15 +69,27 @@ func main() {
 	port := os.Getenv("DATABASE_SERVER_PORT")
 	address := os.Getenv("SERVER_ADDRESS")
 
+	/*model := SnippetModel{DB: db}
+	books_array, _ := model.getByCourse(1)
+
+	response := ""
+	for _,s := range books_array{
+		response = response + s.Subject + s.BookLink + s.BookLink + "\n"
+	}
+	fmt.Println(response)*/
+
 	l, err := net.Listen("tcp", address+":"+port)
 	if err!=nil{
 		log.Fatalln("Error occurred while deploying the server",err)
 	}
 	s := grpc.NewServer()
-	databaseproto.RegisterDatabaseAccessServiceServer(s, &Server{})
+	model := SnippetModel{DB: db}
+	databaseproto.RegisterDatabaseAccessServiceServer(s, &Server{SnippetModel: model})
 	log.Println("Database_Access_Server is running on port: "+port)
 	if err := s.Serve(l); err!=nil{
 		log.Fatalln("Error occured while listening for Database_Access_Server", err)
 	}
+
+
 }
 

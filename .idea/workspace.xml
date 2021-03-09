@@ -3,14 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="443668fa-aaa9-4ce1-8d46-dcab03a66b66" name="Default Changelist" comment="asd">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/db_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/db_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/db_server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/queries.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/queries.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaseproto/db.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaseproto/db.proto" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaseproto/db_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db_grpc.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/globals.env" beforeDir="false" afterPath="$PROJECT_DIR$/globals.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mail_server/mailer_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/mail_server/mailer_server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/main_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main_server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +39,12 @@
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="terminal" />
   </component>
   <component name="RecentsManager">
@@ -54,7 +54,7 @@
       <recent name="C:\Users\q\go\src\monjjubot\handlers" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Build.go build monjjubot/website">
+  <component name="RunManager" selected="Go Build.go build monjjubot/server">
     <configuration name="go build monjjubot/bot_app" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="monjjubot" />
       <working_directory value="$PROJECT_DIR$" />
@@ -64,12 +64,12 @@
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="go build monjjubot/client" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+    <configuration name="go build monjjubot/database" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="monjjubot" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <filePath value="$PROJECT_DIR$/client/client.go" />
-      <package value="monjjubot/client" />
+      <filePath value="$PROJECT_DIR$/database/db_server.go" />
+      <package value="monjjubot/database" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
@@ -102,11 +102,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build monjjubot/website" />
-        <item itemvalue="Go Build.go build monjjubot/bot_app" />
         <item itemvalue="Go Build.go build monjjubot/server" />
+        <item itemvalue="Go Build.go build monjjubot/database" />
+        <item itemvalue="Go Build.go build monjjubot/bot_app" />
+        <item itemvalue="Go Build.go build monjjubot/website" />
         <item itemvalue="Go Build.go build monjjubot/mail_server" />
-        <item itemvalue="Go Build.go build monjjubot/client" />
       </list>
     </recent_temporary>
   </component>
@@ -134,24 +134,28 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="261" key="FileChooserDialogImpl/0.0.1920.1040/-1440.0.1440.860@0.0.1920.1040" timestamp="1614282762399" />
-    <state width="1877" height="152" key="GridCell.Tab.0.bottom" timestamp="1615157964889">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1615294838368">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1615294838368" />
     <state width="1877" height="152" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1440.0.1440.860@0.0.1920.1040" timestamp="1614705773205" />
     <state width="1877" height="152" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1615157964889" />
-    <state width="1877" height="152" key="GridCell.Tab.0.center" timestamp="1615157964889">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1615294838368">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1615294838368" />
     <state width="1877" height="152" key="GridCell.Tab.0.center/0.0.1920.1040/-1440.0.1440.860@0.0.1920.1040" timestamp="1614705773205" />
     <state width="1877" height="152" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1615157964889" />
-    <state width="1877" height="152" key="GridCell.Tab.0.left" timestamp="1615157964889">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1615294838368">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1615294838368" />
     <state width="1877" height="152" key="GridCell.Tab.0.left/0.0.1920.1040/-1440.0.1440.860@0.0.1920.1040" timestamp="1614705773204" />
     <state width="1877" height="152" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1615157964889" />
-    <state width="1877" height="152" key="GridCell.Tab.0.right" timestamp="1615157964889">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1615294838368">
+      <screen x="0" y="0" width="1536" height="824" />
     </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1615294838368" />
     <state width="1877" height="152" key="GridCell.Tab.0.right/0.0.1920.1040/-1440.0.1440.860@0.0.1920.1040" timestamp="1614705773205" />
     <state width="1877" height="152" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1615157964889" />
     <state x="461" y="165" key="SettingsEditor" timestamp="1614282998123">
