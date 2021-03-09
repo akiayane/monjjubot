@@ -119,11 +119,7 @@ func (m *SnippetModel) confirmRegister(vkey string) (bool) {
 
 	defer rows.Close()
 
-	if rows.Next(){
-		return true
-	}else{
-		return false
-	}
+	return true
 }
 
 // This will insert a new snippet into the database.

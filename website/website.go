@@ -42,11 +42,12 @@ func verify(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	vkey := vars["id"]
 	confirmation_status, confirmation_message := verifyOnDatabase(vkey)
+	fmt.Println(confirmation_status, confirmation_message)
 	if confirmation_status==true && confirmation_message=="RegistrationConfirmed"{
 		_, _ = fmt.Fprintf(w, "The account is now verified with vkey: "+vkey)
 	}else{
 		_, _ = fmt.Fprintf(w, "Sorry, error occurred while verification, connect to devs. Vkey is : "+vkey)
-		log.Fatalln("Error occurred while verification")
+		//log.Fatalln("Error occurred while verification")
 	}
 }
 
