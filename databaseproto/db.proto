@@ -21,7 +21,19 @@ message BookPack{
   string book_link = 5;
 }
 
+message registerRequest{
+  string chat_id = 1;
+  string user_email = 2;
+  string vkey = 3;
+}
+
+message registerResponse{
+  bool status = 1;
+  string message = 2;
+}
+
+
 service DatabaseAccessService{
-  //Stream response
-  rpc CourseRequest(bookRequest) returns (bigResponse) {};
+  rpc getBooks(bookRequest) returns (bigResponse) {};
+  rpc registerUser(registerRequest) returns (registerResponse) {};
 }

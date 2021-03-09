@@ -6,6 +6,7 @@ option go_package="monjjubot/request";
 
 message CommandPackRequest {
   string command = 1;
+  string chat_id =2;
 }
 
 message CommandPackResponse {

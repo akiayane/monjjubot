@@ -18,8 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DatabaseAccessServiceClient interface {
-	//Stream response
-	CourseRequest(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error)
+	GetBooks(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error)
+	RegisterUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 }
 
 type databaseAccessServiceClient struct {
@@ -30,9 +30,18 @@ func NewDatabaseAccessServiceClient(cc grpc.ClientConnInterface) DatabaseAccessS
 	return &databaseAccessServiceClient{cc}
 }
 
-func (c *databaseAccessServiceClient) CourseRequest(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error) {
+func (c *databaseAccessServiceClient) GetBooks(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error) {
 	out := new(BigResponse)
-	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/CourseRequest", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/getBooks", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseAccessServiceClient) RegisterUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/registerUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +52,8 @@ func (c *databaseAccessServiceClient) CourseRequest(ctx context.Context, in *Boo
 // All implementations must embed UnimplementedDatabaseAccessServiceServer
 // for forward compatibility
 type DatabaseAccessServiceServer interface {
-	//Stream response
-	CourseRequest(context.Context, *BookRequest) (*BigResponse, error)
+	GetBooks(context.Context, *BookRequest) (*BigResponse, error)
+	RegisterUser(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	mustEmbedUnimplementedDatabaseAccessServiceServer()
 }
 
@@ -52,8 +61,11 @@ type DatabaseAccessServiceServer interface {
 type UnimplementedDatabaseAccessServiceServer struct {
 }
 
-func (UnimplementedDatabaseAccessServiceServer) CourseRequest(context.Context, *BookRequest) (*BigResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CourseRequest not implemented")
+func (UnimplementedDatabaseAccessServiceServer) GetBooks(context.Context, *BookRequest) (*BigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBooks not implemented")
+}
+func (UnimplementedDatabaseAccessServiceServer) RegisterUser(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterUser not implemented")
 }
 func (UnimplementedDatabaseAccessServiceServer) mustEmbedUnimplementedDatabaseAccessServiceServer() {}
 
@@ -68,20 +80,38 @@ func RegisterDatabaseAccessServiceServer(s grpc.ServiceRegistrar, srv DatabaseAc
 	s.RegisterService(&DatabaseAccessService_ServiceDesc, srv)
 }
 
-func _DatabaseAccessService_CourseRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DatabaseAccessService_GetBooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DatabaseAccessServiceServer).CourseRequest(ctx, in)
+		return srv.(DatabaseAccessServiceServer).GetBooks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mailer.DatabaseAccessService/CourseRequest",
+		FullMethod: "/mailer.DatabaseAccessService/getBooks",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseAccessServiceServer).CourseRequest(ctx, req.(*BookRequest))
+		return srv.(DatabaseAccessServiceServer).GetBooks(ctx, req.(*BookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseAccessService_RegisterUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseAccessServiceServer).RegisterUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mailer.DatabaseAccessService/registerUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseAccessServiceServer).RegisterUser(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -94,8 +124,12 @@ var DatabaseAccessService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DatabaseAccessServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CourseRequest",
-			Handler:    _DatabaseAccessService_CourseRequest_Handler,
+			MethodName: "getBooks",
+			Handler:    _DatabaseAccessService_GetBooks_Handler,
+		},
+		{
+			MethodName: "registerUser",
+			Handler:    _DatabaseAccessService_RegisterUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

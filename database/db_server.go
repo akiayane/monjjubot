@@ -29,8 +29,7 @@ func openDB(dsn string) (*pgxpool.Pool, error) {
 	return conn, nil
 }
 
-
-func(s *Server) CourseRequest(ctx context.Context, request *databaseproto.BookRequest) (*databaseproto.BigResponse, error){
+func(s *Server) GetBooks(ctx context.Context, request *databaseproto.BookRequest) (*databaseproto.BigResponse, error){
 
 	course_id := request.CourseId
 	subject := request.Subject
@@ -53,6 +52,31 @@ func(s *Server) CourseRequest(ctx context.Context, request *databaseproto.BookRe
 	bigResponse:= &databaseproto.BigResponse{BookPacks: books}
 	return bigResponse, err
 
+}
+
+func(s *Server) RegisterUser(ctx context.Context, request *databaseproto.RegisterRequest) (*databaseproto.RegisterResponse, error){
+
+	chat_id := request.ChatId
+	email := request.UserEmail
+	vkey := request.Vkey
+
+	res := &databaseproto.RegisterResponse{Status: false, Message: ""}
+
+	if s.userExist(chat_id, email){
+		res.Status = true
+		res.Message = "UserAlreadyExist"
+	}else{
+		stat, err := s.registerUser(chat_id, email, vkey)
+		if err==nil && stat==true{
+			res.Status = true
+			res.Message = "UserCreated"
+		}
+		if err!=nil{
+			log.Println("Error occured while registering user on database_access_server", err)
+		}
+	}
+
+	return res, nil
 }
 
 func main() {

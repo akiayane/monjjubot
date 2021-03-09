@@ -25,18 +25,20 @@ type Server struct {
 	website_server_port string
 }
 
-func separate_param(str string) (string,string) {
+func separate_param(str string) (string,string,string) {
 	if strings.Contains(str, " "){
 		space_index := strings.Index(str," ")
 		command := str[0:space_index]
-		param := str[space_index:]
-		return strings.Trim(command," "), strings.Trim(param," ")
+		param1 := str[space_index:]
+		space_index = strings.Index(param1," ")
+		param2 := param1[space_index:]
+		return strings.Trim(command," "), strings.Trim(param1," "), strings.Trim(param2," ")
 
 	}
-	return strings.Trim(str," "), ""
+	return strings.Trim(str," "), "",""
 }
 
-func connectToMailer(email string, message string) (response bool){
+func sendEmail(email string, message string) (response bool){
 
 	fmt.Println("ClientConnectedToMailer")
 	_ = godotenv.Load("globals.env")
@@ -61,7 +63,7 @@ func connectToMailer(email string, message string) (response bool){
 
 }
 
-func connectToDatabase(course_id int64, subject string) *databaseproto.BigResponse {
+func getBookFromDatabase(course_id int64, subject string) *databaseproto.BigResponse {
 	fmt.Println("ClientConnectedToDatabase")
 	_ = godotenv.Load("globals.env")
 	port := os.Getenv("DATABASE_SERVER_PORT")
@@ -75,32 +77,66 @@ func connectToDatabase(course_id int64, subject string) *databaseproto.BigRespon
 	c:=databaseproto.NewDatabaseAccessServiceClient(conn)
 	ctx := context.Background()
 	req := &databaseproto.BookRequest{CourseId: course_id, Subject: subject}
-	response, _ := c.CourseRequest(ctx,req)
+	response, _ := c.GetBooks(ctx,req)
 	return response
+}
+
+func registerUSer(chat_id string, email string, vkey string) (*databaseproto.RegisterResponse,error){
+	fmt.Println("ClientConnectedToDatabase")
+	_ = godotenv.Load("globals.env")
+	port := os.Getenv("DATABASE_SERVER_PORT")
+	address := os.Getenv("SERVER_ADDRESS")
+	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("could not connect: %v", err)
+	}
+	defer conn.Close()
+
+	c := databaseproto.NewDatabaseAccessServiceClient(conn)
+	ctx := context.Background()
+	req := &databaseproto.RegisterRequest{ChatId: chat_id,UserEmail: email, Vkey: vkey}
+	response, err := c.RegisterUser(ctx, req)
+	return response, err
 }
 
 
 func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest) (*request.CommandPackResponse, error) {
 	command:=req.Command
-	param := ""
-	command,param = separate_param(command)
+	param1 := ""
+	param2 := ""
+	command,param1,param2 = separate_param(command)
 
 	res := &request.CommandPackResponse{Status: false, Response: "Unknown command, use /guide to see available commands"}
 
 	switch command {
 		case "/get":
-			if param==""{
+			if param1==""{
 				res.Status = true
 				res.Response = "the Course parameter is empty"
 				break
 			}
-			res.Status = true
-			course_id, _ := strconv.ParseInt(param, 10, 32)
-			response_books := connectToDatabase(course_id, "")
-			books_array := response_books.BookPacks
-			res.Response = ""
-			for _,s := range books_array{
-				res.Response = res.Response + s.Subject + " " + s.BookName + ": " + s.BookLink + "\n"
+			if param1!="" && param2==""{
+				res.Status = true
+				course_id, _ := strconv.ParseInt(param1, 10, 32)
+				response_books := getBookFromDatabase(course_id, "")
+				books_array := response_books.BookPacks
+				res.Response = ""
+				for _,s := range books_array{
+					res.Response = res.Response + s.Subject + " " + s.BookName + ": " + s.BookLink + "\n"
+				}
+				break
+			}
+			if param1!="" && param2!=""{
+				res.Status = true
+				course_id, _ := strconv.ParseInt(param1, 10, 32)
+				subject:= param2
+				response_books := getBookFromDatabase(course_id, subject)
+				books_array := response_books.BookPacks
+				res.Response = ""
+				for _,s := range books_array{
+					res.Response = res.Response + s.Subject + " " + s.BookName + ": " + s.BookLink + "\n"
+				}
+				break
 			}
 
 		case "/start":
@@ -109,29 +145,38 @@ func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest
 		case "/guide":
 			res.Status = true
 			res.Response = "Available commands: /guide, /start, /reg <example_email@astaneit.edu.kz>"
+
 		case "/reg":
-			if param==""{
+			if param1==""{
 				res.Status = true
 				res.Response = "Email field is empty, use /guide to see available commands"
 				break
 			}
-			if strings.Contains(param, "@astanait.edu.kz"){
+			if strings.Contains(param1, "@astanait.edu.kz"){
 				res.Status = true
-				email_address := param
+				email_address := param1
 				vkey := md5.Sum([]byte(email_address))
-				log.Println(vkey)
-				fmt.Printf("   MD5: %x\n", vkey)
-				//vkey := "123124"
-				email_message := "Hello, dear user! " +
-					"\nYou see this message because you have registered your email in Monjjubot. " +
-					"\nTo finish registration please follow this link: \n" +
-					s.server_domain_name+":"+s.website_server_port+"/verify/"+hex.EncodeToString(vkey[:])+"\n" +
-					"\n If you did not do that, please close this letter and do not respond. "
-				sending_status := connectToMailer(email_address, email_message)
-				if sending_status{
-					res.Response = "Email accepted"
+
+				registration, _ := registerUSer(req.ChatId, email_address, hex.EncodeToString(vkey[:]))
+
+				if registration.Status==true && registration.Message =="UserAlreadyExist"{
+					res.Response = "You have already registered in the system!"
+					break
+				}
+				if registration.Status==true && registration.Message =="UserCreated"{
+					email_message := "Hello, dear user! " +
+						"\nYou see this message because you have registered your email in Monjjubot. " +
+						"\nTo finish registration please follow this link: \n" +
+						s.server_domain_name+":"+s.website_server_port+"/verify/"+hex.EncodeToString(vkey[:])+"\n" +
+						"\n If you did not do that, please close this letter and do not respond. "
+					sending_status := sendEmail(email_address, email_message)
+					if sending_status{
+						res.Response = "Email accepted, please check your mail box! P.s Check spam folder too)"
+					}else{
+						res.Response = "Error occurred while sending email, pls connect to devs"
+					}
 				}else{
-					res.Response = "Error occured while sending email, pls connect to devs"
+					res.Response = "Error occurred while registering, pls connect to devs"
 				}
 
 			}else{

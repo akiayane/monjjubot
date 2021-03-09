@@ -4,41 +4,39 @@ import (
 	"context"
 	"fmt"
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"log"
 	"monjjubot/request"
+	"os"
+	"strconv"
 )
 
 
-
-func connect(pattern string) (response string){
+func connectToMainServer(chat_id string,pattern string) (response string){
 
 	fmt.Println("ClientConnected")
-
-	conn, err := grpc.Dial("localhost:59751", grpc.WithInsecure())
+	_ = godotenv.Load("globals.env")
+	port := os.Getenv("MAIN_SERVER_PORT")
+	address := os.Getenv("SERVER_ADDRESS")
+	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("could not connect: %v", err)
 	}
 	defer conn.Close()
 
 	c := request.NewTelegramBotServiceClient(conn)
-	response = doRequest(c, pattern)
-	return response
-
-}
-
-func doRequest(client request.TelegramBotServiceClient, pattern string) (response string){
 	ctx := context.Background()
-	req := &request.CommandPackRequest{Command:pattern}
+	req := &request.CommandPackRequest{Command:pattern, ChatId: chat_id}
 
-	res, err := client.CommandPack(ctx, req)
+	res, err := c.CommandPack(ctx, req)
 	if err!=nil{
-		log.Fatalln("Error when getting response from server: ",err)
+		log.Fatalln("Error when getting response from main_server: ",err)
 	}
 	response = res.Response
 	return response
-}
 
+}
 
 func Bot_handler_init(bot *tgbotapi.BotAPI) {
 
@@ -53,15 +51,13 @@ func Bot_handler_init(bot *tgbotapi.BotAPI) {
 		if update.Message == nil {
 			continue
 		}
-		response_string := connect(update.Message.Text)
+		response_string := connectToMainServer(update.Message.Text, strconv.FormatInt(update.Message.Chat.ID, 10))
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, response_string)
 		_, err = bot.Send(msg)
 		if err!=nil{
 			log.Println("Error when sending via tg bot: ",err)
 		}
-
 	}
-
 }
 
 

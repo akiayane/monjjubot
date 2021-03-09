@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"monjjubot/databaseproto"
+	"time"
 )
 
 type SnippetModel struct {
@@ -76,6 +77,36 @@ func (m *SnippetModel) getBySubject(course_id int, subject string) ([]*databasep
 		return nil, err
 	}
 	return books, nil
+}
+
+func (m *SnippetModel) registerUser(chat_id string, email string, vkey string) (bool, error) {
+	stmt := "INSERT INTO users (chat_id, email, verifyed, vkey, create_time) VALUES ($1, $2, $3, $4, $5)"
+
+	rows, err := m.DB.Query(context.Background(), stmt, chat_id, email, 0, vkey, time.Now())
+	if err != nil {
+		return false, err
+	}
+
+	defer rows.Close()
+
+	return true, nil
+}
+
+func (m *SnippetModel) userExist(chat_id string, email string) (bool) {
+	stmt := "SELECT * FROM users WHERE chat_id = $1 and email = $2"
+
+	rows, err := m.DB.Query(context.Background(), stmt, chat_id, email)
+	if err != nil {
+		return false
+	}
+
+	defer rows.Close()
+
+	if rows.Next(){
+		return true
+	}else{
+		return false
+	}
 }
 
 // This will insert a new snippet into the database.
