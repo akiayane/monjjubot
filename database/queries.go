@@ -82,7 +82,7 @@ func (m *SnippetModel) getBySubject(course_id int, subject string) ([]*databasep
 func (m *SnippetModel) registerUser(chat_id string, email string, vkey string) (bool, error) {
 	stmt := "INSERT INTO users (chat_id, email, verifyed, vkey, create_time) VALUES ($1, $2, $3, $4, $5)"
 
-	rows, err := m.DB.Query(context.Background(), stmt, chat_id, email, 0, vkey, time.Now())
+	rows, err := m.DB.Query(context.Background(), stmt, chat_id, email, false, vkey, time.Now())
 	if err != nil {
 		return false, err
 	}

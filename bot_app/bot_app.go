@@ -13,7 +13,7 @@ import (
 )
 
 
-func connectToMainServer(chat_id string,pattern string) (response string){
+func connectToMainServer(pattern string, chat_id string) (response string){
 
 	fmt.Println("ClientConnected")
 	_ = godotenv.Load("globals.env")
