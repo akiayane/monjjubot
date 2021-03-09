@@ -32,8 +32,12 @@ message registerResponse{
   string message = 2;
 }
 
+message confirmRequest{
+  string vkey = 1;
+}
 
 service DatabaseAccessService{
   rpc getBooks(bookRequest) returns (bigResponse) {};
   rpc registerUser(registerRequest) returns (registerResponse) {};
+  rpc confirmRegister(confirmRequest) returns (registerResponse) {};
 }

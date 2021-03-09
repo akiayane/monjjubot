@@ -109,6 +109,23 @@ func (m *SnippetModel) userExist(chat_id string, email string) (bool) {
 	}
 }
 
+func (m *SnippetModel) confirmRegister(vkey string) (bool) {
+	stmt := "UPDATE users SET verified = true WHERE vkey = $1"
+
+	rows, err := m.DB.Query(context.Background(), stmt, vkey)
+	if err != nil {
+		return false
+	}
+
+	defer rows.Close()
+
+	if rows.Next(){
+		return true
+	}else{
+		return false
+	}
+}
+
 // This will insert a new snippet into the database.
 /*func (m *SnippetModel) Insert(title, content, expires string) (int, error) {
 

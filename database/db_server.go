@@ -79,6 +79,21 @@ func(s *Server) RegisterUser(ctx context.Context, request *databaseproto.Registe
 	return res, nil
 }
 
+func(s *Server) ConfirmRegister(ctx context.Context, request *databaseproto.ConfirmRequest) (*databaseproto.RegisterResponse, error){
+
+	vkey := request.Vkey
+
+	res := &databaseproto.RegisterResponse{Status: false, Message: "UserNotConfirmed"}
+
+	if s.confirmRegister(vkey){
+		res.Status = true
+		res.Message = "RegistrationConfirmed"
+	}
+
+	return res, nil
+}
+
+
 func main() {
 	dsn := flag.String("dns", "postgres://postgres:root@localhost:5432/telebot", "Postgre data source name")
 

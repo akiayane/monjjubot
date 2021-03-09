@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type DatabaseAccessServiceClient interface {
 	GetBooks(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error)
 	RegisterUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	ConfirmRegister(ctx context.Context, in *ConfirmRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 }
 
 type databaseAccessServiceClient struct {
@@ -48,12 +49,22 @@ func (c *databaseAccessServiceClient) RegisterUser(ctx context.Context, in *Regi
 	return out, nil
 }
 
+func (c *databaseAccessServiceClient) ConfirmRegister(ctx context.Context, in *ConfirmRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/confirmRegister", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DatabaseAccessServiceServer is the server API for DatabaseAccessService service.
 // All implementations must embed UnimplementedDatabaseAccessServiceServer
 // for forward compatibility
 type DatabaseAccessServiceServer interface {
 	GetBooks(context.Context, *BookRequest) (*BigResponse, error)
 	RegisterUser(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	ConfirmRegister(context.Context, *ConfirmRequest) (*RegisterResponse, error)
 	mustEmbedUnimplementedDatabaseAccessServiceServer()
 }
 
@@ -66,6 +77,9 @@ func (UnimplementedDatabaseAccessServiceServer) GetBooks(context.Context, *BookR
 }
 func (UnimplementedDatabaseAccessServiceServer) RegisterUser(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterUser not implemented")
+}
+func (UnimplementedDatabaseAccessServiceServer) ConfirmRegister(context.Context, *ConfirmRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfirmRegister not implemented")
 }
 func (UnimplementedDatabaseAccessServiceServer) mustEmbedUnimplementedDatabaseAccessServiceServer() {}
 
@@ -116,6 +130,24 @@ func _DatabaseAccessService_RegisterUser_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatabaseAccessService_ConfirmRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseAccessServiceServer).ConfirmRegister(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mailer.DatabaseAccessService/confirmRegister",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseAccessServiceServer).ConfirmRegister(ctx, req.(*ConfirmRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DatabaseAccessService_ServiceDesc is the grpc.ServiceDesc for DatabaseAccessService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +162,10 @@ var DatabaseAccessService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "registerUser",
 			Handler:    _DatabaseAccessService_RegisterUser_Handler,
+		},
+		{
+			MethodName: "confirmRegister",
+			Handler:    _DatabaseAccessService_ConfirmRegister_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
