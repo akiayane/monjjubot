@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"monjjubot/databaseproto"
+	"monjjubot/database"
 	"time"
 )
 
@@ -19,7 +19,7 @@ type BookPack struct {
 	book_link string
 }
 
-func (m *SnippetModel) getByCourse(course_id int) ([]*databaseproto.BookPack, error) {
+func (m *SnippetModel) getByCourse(course_id int) ([]*database.BookPack, error) {
 	stmt := "SELECT * FROM books WHERE course_id = $1"
 
 	rows, err := m.DB.Query(context.Background(), stmt, course_id)
@@ -29,11 +29,11 @@ func (m *SnippetModel) getByCourse(course_id int) ([]*databaseproto.BookPack, er
 
 	defer rows.Close()
 
-	var books []*databaseproto.BookPack
+	var books []*database.BookPack
 
 	for rows.Next() {
 
-		s := &databaseproto.BookPack{}
+		s := &database.BookPack{}
 
 		err = rows.Scan(&s.BookId, &s.CourseId, &s.Subject, &s.BookName, &s.BookLink)
 		if err != nil {
@@ -49,7 +49,7 @@ func (m *SnippetModel) getByCourse(course_id int) ([]*databaseproto.BookPack, er
 	return books, nil
 }
 
-func (m *SnippetModel) getBySubject(course_id int, subject string) ([]*databaseproto.BookPack, error) {
+func (m *SnippetModel) getBySubject(course_id int, subject string) ([]*database.BookPack, error) {
 	stmt := "SELECT * FROM books WHERE course_id = $1 and subject = $2"
 
 	rows, err := m.DB.Query(context.Background(), stmt, course_id, subject)
@@ -59,11 +59,11 @@ func (m *SnippetModel) getBySubject(course_id int, subject string) ([]*databasep
 
 	defer rows.Close()
 
-	var books []*databaseproto.BookPack
+	var books []*database.BookPack
 
 	for rows.Next() {
 
-		s := &databaseproto.BookPack{}
+		s := &database.BookPack{}
 
 		err = rows.Scan(&s.BookId, &s.CourseId, &s.Subject, &s.BookName, &s.BookLink)
 		if err != nil {
@@ -133,7 +133,7 @@ func (m *SnippetModel) confirmRegister(vkey string) (bool) {
 	return true
 }
 
-// This will insert a new snippet into the database.
+// This will insert a new snippet into the database_server.
 /*func (m *SnippetModel) Insert(title, content, expires string) (int, error) {
 
 	stmt := "INSERT INTO snippets (title, content, created, expires) VALUES ($1, $2, $3, $4) RETURNING id"

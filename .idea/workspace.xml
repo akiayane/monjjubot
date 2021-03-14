@@ -2,16 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="443668fa-aaa9-4ce1-8d46-dcab03a66b66" name="Default Changelist" comment="asd">
-      <change afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/auth_server/auth_server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/db_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/db_server.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/queries.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/queries.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaseproto/db.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaseproto/db.proto" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaseproto/db_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db_grpc.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/globals.env" beforeDir="false" afterPath="$PROJECT_DIR$/globals.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/main_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth_server/auth_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/auth_server/auth_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot_app/bot_app.go" beforeDir="false" afterPath="$PROJECT_DIR$/bot_app/bot_app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/db_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/database_server/db_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/queries.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/database_server/queries.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaseproto/db.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/db.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaseproto/db.proto" beforeDir="false" afterPath="$PROJECT_DIR$/database/db.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaseproto/db_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/db_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mail_server/mailer_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/mailer/mail_server/mailer_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/request/request.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/main_server/request.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/request/request.proto" beforeDir="false" afterPath="$PROJECT_DIR$/main_server/request.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/request/request_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/main_server/request_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/main_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/main_server/server/main_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/website/website.go" beforeDir="false" afterPath="$PROJECT_DIR$/website/website.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,9 +61,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\q\Documents\GitHub\monjjubot\request" />
+      <recent name="C:\Users\q\Documents\GitHub\monjjubot\mailer" />
+      <recent name="C:\Users\q\Documents\GitHub\monjjubot\databaseproto" />
+      <recent name="C:\Users\q\Documents\GitHub\monjjubot\auth" />
       <recent name="C:\Users\q\go\src\monjjubot" />
-      <recent name="C:\Users\q\go\src\monjjubot\server" />
-      <recent name="C:\Users\q\go\src\monjjubot\handlers" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build monjjubot/database">

@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"monjjubot/auth"
-	"monjjubot/databaseproto"
+	"monjjubot/database"
 	"net"
 	"os"
 )
@@ -68,9 +68,9 @@ func checkVerification(chat_id string) (bool,error){
 		log.Fatalf("could not connect: %v", err)
 	}
 	defer conn.Close()
-	c := databaseproto.NewDatabaseAccessServiceClient(conn)
+	c := database.NewDatabaseAccessServiceClient(conn)
 	ctx := context.Background()
-	req := &databaseproto.VerificationRequest{Chatid: chat_id}
+	req := &database.VerificationRequest{Chatid: chat_id}
 	response, err := c.CheckVerification(ctx, req)
 	return response.Status, err
 }

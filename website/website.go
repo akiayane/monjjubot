@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"log"
-	"monjjubot/databaseproto"
+	"monjjubot/database"
 	"net/http"
 	"os"
 )
@@ -23,9 +23,9 @@ func verifyOnDatabase(vkey string) (bool,string){
 	}
 	defer conn.Close()
 
-	c := databaseproto.NewDatabaseAccessServiceClient(conn)
+	c := database.NewDatabaseAccessServiceClient(conn)
 	ctx := context.Background()
-	req := &databaseproto.ConfirmRequest{Vkey: vkey}
+	req := &database.ConfirmRequest{Vkey: vkey}
 
 	res, err := c.ConfirmRegister(ctx, req)
 	if err!=nil{

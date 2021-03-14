@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"log"
-	"monjjubot/request"
+	"monjjubot/main_server"
 	"os"
 	"strconv"
 )
@@ -25,9 +25,9 @@ func connectToMainServer(pattern string, chat_id string) (response string){
 	}
 	defer conn.Close()
 
-	c := request.NewTelegramBotServiceClient(conn)
+	c := main_server.NewTelegramBotServiceClient(conn)
 	ctx := context.Background()
-	req := &request.CommandPackRequest{Command:pattern, ChatId: chat_id}
+	req := &main_server.CommandPackRequest{Command: pattern, ChatId: chat_id}
 
 	res, err := c.CommandPack(ctx, req)
 	if err!=nil{

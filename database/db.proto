@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package databaseproto;
 
-option go_package="monjjubot/databaseproto";
+option go_package="monjjubot/database";
 
 message bookRequest {
   int64 course_id = 1;

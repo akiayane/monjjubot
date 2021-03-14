@@ -9,32 +9,32 @@ import (
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"log"
-	"monjjubot/databaseproto"
+	"monjjubot/database"
 	"net"
 	"os"
 )
 
 type Server struct {
-	databaseproto.UnimplementedDatabaseAccessServiceServer
+	database.UnimplementedDatabaseAccessServiceServer
 	SnippetModel
 }
 
 func openDB(dsn string) (*pgxpool.Pool, error) {
 	conn, err := pgxpool.Connect(context.Background(), dsn)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "Unable to connect to database_server: %v\n", err)
 		os.Exit(1)
 		return nil, err
 	}
 	return conn, nil
 }
 
-func(s *Server) GetBooks(ctx context.Context, request *databaseproto.BookRequest) (*databaseproto.BigResponse, error){
+func(s *Server) GetBooks(ctx context.Context, request *database.BookRequest) (*database.BigResponse, error){
 
 	course_id := request.CourseId
 	subject := request.Subject
 
-	var books []*databaseproto.BookPack
+	var books []*database.BookPack
 
 	err := errors.New("empty error")
 	if subject==""{
@@ -49,18 +49,18 @@ func(s *Server) GetBooks(ctx context.Context, request *databaseproto.BookRequest
 		}
 	}
 
-	bigResponse:= &databaseproto.BigResponse{BookPacks: books}
+	bigResponse:= &database.BigResponse{BookPacks: books}
 	return bigResponse, err
 
 }
 
-func(s *Server) RegisterUser(ctx context.Context, request *databaseproto.RegisterRequest) (*databaseproto.RegisterResponse, error){
+func(s *Server) RegisterUser(ctx context.Context, request *database.RegisterRequest) (*database.RegisterResponse, error){
 
 	chat_id := request.ChatId
 	email := request.UserEmail
 	vkey := request.Vkey
 
-	res := &databaseproto.RegisterResponse{Status: false, Message: ""}
+	res := &database.RegisterResponse{Status: false, Message: ""}
 
 	if s.userExist(chat_id, email){
 		res.Status = true
@@ -79,11 +79,11 @@ func(s *Server) RegisterUser(ctx context.Context, request *databaseproto.Registe
 	return res, nil
 }
 
-func(s *Server) ConfirmRegister(ctx context.Context, request *databaseproto.ConfirmRequest) (*databaseproto.RegisterResponse, error){
+func(s *Server) ConfirmRegister(ctx context.Context, request *database.ConfirmRequest) (*database.RegisterResponse, error){
 
 	vkey := request.Vkey
 
-	res := &databaseproto.RegisterResponse{Status: false, Message: "UserNotConfirmed"}
+	res := &database.RegisterResponse{Status: false, Message: "UserNotConfirmed"}
 
 	if s.confirmRegister(vkey){
 		res.Status = true
@@ -92,9 +92,9 @@ func(s *Server) ConfirmRegister(ctx context.Context, request *databaseproto.Conf
 
 	return res, nil
 }
-func(s *Server) CheckVerification(ctx context.Context,request *databaseproto.VerificationRequest) (*databaseproto.VerificationResponse,error){
+func(s *Server) CheckVerification(ctx context.Context,request *database.VerificationRequest) (*database.VerificationResponse,error){
 	chat_id:=request.Chatid
-	response:=&databaseproto.VerificationResponse{Status: false};
+	response:=&database.VerificationResponse{Status: false};
 	status:=s.checkVerification(chat_id)
 	response.Status=status
 	return response, nil
@@ -131,7 +131,7 @@ func main() {
 	}
 	s := grpc.NewServer()
 	model := SnippetModel{DB: db}
-	databaseproto.RegisterDatabaseAccessServiceServer(s, &Server{SnippetModel: model})
+	database.RegisterDatabaseAccessServiceServer(s, &Server{SnippetModel: model})
 	log.Println("Database_Access_Server is running on port: "+port)
 	if err := s.Serve(l); err!=nil{
 		log.Fatalln("Error occured while listening for Database_Access_Server", err)

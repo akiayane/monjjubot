@@ -8,9 +8,9 @@ import (
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"log"
-	"monjjubot/databaseproto"
+	"monjjubot/database"
 	"monjjubot/mailer"
-	"monjjubot/request"
+	"monjjubot/main_server"
 	"monjjubot/auth"
 	"net"
 	"os"
@@ -19,7 +19,7 @@ import (
 )
 
 type Server struct {
-	request.UnimplementedTelegramBotServiceServer
+	main_server.UnimplementedTelegramBotServiceServer
 
 	server_address string
 	server_domain_name string
@@ -83,7 +83,7 @@ func sendEmail(email string, message string) (response bool){
 
 }
 
-func getBookFromDatabase(course_id int64, subject string) *databaseproto.BigResponse {
+func getBookFromDatabase(course_id int64, subject string) *database.BigResponse {
 	fmt.Println("ClientConnectedToDatabase")
 	_ = godotenv.Load("globals.env")
 	port := os.Getenv("DATABASE_SERVER_PORT")
@@ -94,14 +94,14 @@ func getBookFromDatabase(course_id int64, subject string) *databaseproto.BigResp
 	}
 	defer conn.Close()
 
-	c:=databaseproto.NewDatabaseAccessServiceClient(conn)
+	c:= database.NewDatabaseAccessServiceClient(conn)
 	ctx := context.Background()
-	req := &databaseproto.BookRequest{CourseId: course_id, Subject: subject}
+	req := &database.BookRequest{CourseId: course_id, Subject: subject}
 	response, _ := c.GetBooks(ctx,req)
 	return response
 }
 
-func registerUSer(chat_id string, email string, vkey string) (*databaseproto.RegisterResponse,error){
+func registerUSer(chat_id string, email string, vkey string) (*database.RegisterResponse,error){
 	fmt.Println("ClientConnectedToDatabase")
 	_ = godotenv.Load("globals.env")
 	port := os.Getenv("DATABASE_SERVER_PORT")
@@ -112,21 +112,21 @@ func registerUSer(chat_id string, email string, vkey string) (*databaseproto.Reg
 	}
 	defer conn.Close()
 
-	c := databaseproto.NewDatabaseAccessServiceClient(conn)
+	c := database.NewDatabaseAccessServiceClient(conn)
 	ctx := context.Background()
-	req := &databaseproto.RegisterRequest{ChatId: chat_id,UserEmail: email, Vkey: vkey}
+	req := &database.RegisterRequest{ChatId: chat_id,UserEmail: email, Vkey: vkey}
 	response, err := c.RegisterUser(ctx, req)
 	return response, err
 }
 
 
-func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest) (*request.CommandPackResponse, error) {
+func (s *Server) CommandPack(ctx context.Context,req *main_server.CommandPackRequest) (*main_server.CommandPackResponse, error) {
 	command:=req.Command
 	param1 := ""
 	param2 := ""
 	command,param1,param2 = separate_param(command)
 	
-	res := &request.CommandPackResponse{Status: false, Response: "Unknown command, use /guide to see available commands"}
+	res := &main_server.CommandPackResponse{Status: false, Response: "Unknown command, use /guide to see available commands"}
 	auth_message, auth_status := Auth_service(req.ChatId,command)
 	if !(auth_status && auth_message=="Allowed") {
 		res.Status=true
@@ -220,7 +220,7 @@ func main() {
 		log.Fatalf("Failed to listen:%v", err)
 	}
 	s := grpc.NewServer()
-	request.RegisterTelegramBotServiceServer(s, &Server{
+	main_server.RegisterTelegramBotServiceServer(s, &Server{
 		server_address: address,
 		website_server_port: os.Getenv("WEBSITE_PORT"),
 		server_domain_name: os.Getenv("SERVER_DOMAIN_NAME"),

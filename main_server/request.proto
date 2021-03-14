@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package commandpack;
 
-option go_package="monjjubot/request";
+option go_package="monjjubot/main_server";
 
 message CommandPackRequest {
   string command = 1;

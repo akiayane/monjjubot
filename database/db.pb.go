@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.25.0
 // 	protoc        v3.14.0
-// source: databaseproto/db.proto
+// source: database/db.proto
 
-package databaseproto
+package database
 
 import (
 	proto "github.com/golang/protobuf/proto"
@@ -549,25 +549,25 @@ func file_databaseproto_db_proto_rawDescGZIP() []byte {
 
 var file_databaseproto_db_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_databaseproto_db_proto_goTypes = []interface{}{
-	(*BookRequest)(nil),          // 0: databaseproto.bookRequest
-	(*BigResponse)(nil),          // 1: databaseproto.bigResponse
-	(*BookPack)(nil),             // 2: databaseproto.BookPack
-	(*RegisterRequest)(nil),      // 3: databaseproto.registerRequest
-	(*RegisterResponse)(nil),     // 4: databaseproto.registerResponse
-	(*ConfirmRequest)(nil),       // 5: databaseproto.confirmRequest
-	(*VerificationRequest)(nil),  // 6: databaseproto.verification_request
-	(*VerificationResponse)(nil), // 7: databaseproto.verification_response
+	(*BookRequest)(nil),          // 0: database.bookRequest
+	(*BigResponse)(nil),          // 1: database.bigResponse
+	(*BookPack)(nil),             // 2: database.BookPack
+	(*RegisterRequest)(nil),      // 3: database.registerRequest
+	(*RegisterResponse)(nil),     // 4: database.registerResponse
+	(*ConfirmRequest)(nil),       // 5: database.confirmRequest
+	(*VerificationRequest)(nil),  // 6: database.verification_request
+	(*VerificationResponse)(nil), // 7: database.verification_response
 }
 var file_databaseproto_db_proto_depIdxs = []int32{
-	2, // 0: databaseproto.bigResponse.bookPacks:type_name -> databaseproto.BookPack
-	0, // 1: databaseproto.DatabaseAccessService.getBooks:input_type -> databaseproto.bookRequest
-	3, // 2: databaseproto.DatabaseAccessService.registerUser:input_type -> databaseproto.registerRequest
-	5, // 3: databaseproto.DatabaseAccessService.confirmRegister:input_type -> databaseproto.confirmRequest
-	6, // 4: databaseproto.DatabaseAccessService.checkVerification:input_type -> databaseproto.verification_request
-	1, // 5: databaseproto.DatabaseAccessService.getBooks:output_type -> databaseproto.bigResponse
-	4, // 6: databaseproto.DatabaseAccessService.registerUser:output_type -> databaseproto.registerResponse
-	4, // 7: databaseproto.DatabaseAccessService.confirmRegister:output_type -> databaseproto.registerResponse
-	7, // 8: databaseproto.DatabaseAccessService.checkVerification:output_type -> databaseproto.verification_response
+	2, // 0: database.bigResponse.bookPacks:type_name -> database.BookPack
+	0, // 1: database.DatabaseAccessService.getBooks:input_type -> database.bookRequest
+	3, // 2: database.DatabaseAccessService.registerUser:input_type -> database.registerRequest
+	5, // 3: database.DatabaseAccessService.confirmRegister:input_type -> database.confirmRequest
+	6, // 4: database.DatabaseAccessService.checkVerification:input_type -> database.verification_request
+	1, // 5: database.DatabaseAccessService.getBooks:output_type -> database.bigResponse
+	4, // 6: database.DatabaseAccessService.registerUser:output_type -> database.registerResponse
+	4, // 7: database.DatabaseAccessService.confirmRegister:output_type -> database.registerResponse
+	7, // 8: database.DatabaseAccessService.checkVerification:output_type -> database.verification_response
 	5, // [5:9] is the sub-list for method output_type
 	1, // [1:5] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
