@@ -21,6 +21,7 @@ type DatabaseAccessServiceClient interface {
 	GetBooks(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error)
 	RegisterUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	ConfirmRegister(ctx context.Context, in *ConfirmRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	CheckVerification(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*VerificationResponse, error)
 }
 
 type databaseAccessServiceClient struct {
@@ -33,7 +34,7 @@ func NewDatabaseAccessServiceClient(cc grpc.ClientConnInterface) DatabaseAccessS
 
 func (c *databaseAccessServiceClient) GetBooks(ctx context.Context, in *BookRequest, opts ...grpc.CallOption) (*BigResponse, error) {
 	out := new(BigResponse)
-	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/getBooks", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/databaseproto.DatabaseAccessService/getBooks", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,7 @@ func (c *databaseAccessServiceClient) GetBooks(ctx context.Context, in *BookRequ
 
 func (c *databaseAccessServiceClient) RegisterUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	out := new(RegisterResponse)
-	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/registerUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/databaseproto.DatabaseAccessService/registerUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +52,16 @@ func (c *databaseAccessServiceClient) RegisterUser(ctx context.Context, in *Regi
 
 func (c *databaseAccessServiceClient) ConfirmRegister(ctx context.Context, in *ConfirmRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	out := new(RegisterResponse)
-	err := c.cc.Invoke(ctx, "/mailer.DatabaseAccessService/confirmRegister", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/databaseproto.DatabaseAccessService/confirmRegister", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseAccessServiceClient) CheckVerification(ctx context.Context, in *VerificationRequest, opts ...grpc.CallOption) (*VerificationResponse, error) {
+	out := new(VerificationResponse)
+	err := c.cc.Invoke(ctx, "/databaseproto.DatabaseAccessService/checkVerification", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,6 +75,7 @@ type DatabaseAccessServiceServer interface {
 	GetBooks(context.Context, *BookRequest) (*BigResponse, error)
 	RegisterUser(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	ConfirmRegister(context.Context, *ConfirmRequest) (*RegisterResponse, error)
+	CheckVerification(context.Context, *VerificationRequest) (*VerificationResponse, error)
 	mustEmbedUnimplementedDatabaseAccessServiceServer()
 }
 
@@ -80,6 +91,9 @@ func (UnimplementedDatabaseAccessServiceServer) RegisterUser(context.Context, *R
 }
 func (UnimplementedDatabaseAccessServiceServer) ConfirmRegister(context.Context, *ConfirmRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfirmRegister not implemented")
+}
+func (UnimplementedDatabaseAccessServiceServer) CheckVerification(context.Context, *VerificationRequest) (*VerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckVerification not implemented")
 }
 func (UnimplementedDatabaseAccessServiceServer) mustEmbedUnimplementedDatabaseAccessServiceServer() {}
 
@@ -104,7 +118,7 @@ func _DatabaseAccessService_GetBooks_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mailer.DatabaseAccessService/getBooks",
+		FullMethod: "/databaseproto.DatabaseAccessService/getBooks",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatabaseAccessServiceServer).GetBooks(ctx, req.(*BookRequest))
@@ -122,7 +136,7 @@ func _DatabaseAccessService_RegisterUser_Handler(srv interface{}, ctx context.Co
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mailer.DatabaseAccessService/registerUser",
+		FullMethod: "/databaseproto.DatabaseAccessService/registerUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatabaseAccessServiceServer).RegisterUser(ctx, req.(*RegisterRequest))
@@ -140,10 +154,28 @@ func _DatabaseAccessService_ConfirmRegister_Handler(srv interface{}, ctx context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mailer.DatabaseAccessService/confirmRegister",
+		FullMethod: "/databaseproto.DatabaseAccessService/confirmRegister",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DatabaseAccessServiceServer).ConfirmRegister(ctx, req.(*ConfirmRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseAccessService_CheckVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseAccessServiceServer).CheckVerification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/databaseproto.DatabaseAccessService/checkVerification",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseAccessServiceServer).CheckVerification(ctx, req.(*VerificationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -152,7 +184,7 @@ func _DatabaseAccessService_ConfirmRegister_Handler(srv interface{}, ctx context
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DatabaseAccessService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "mailer.DatabaseAccessService",
+	ServiceName: "databaseproto.DatabaseAccessService",
 	HandlerType: (*DatabaseAccessServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -166,6 +198,10 @@ var DatabaseAccessService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "confirmRegister",
 			Handler:    _DatabaseAccessService_ConfirmRegister_Handler,
+		},
+		{
+			MethodName: "checkVerification",
+			Handler:    _DatabaseAccessService_CheckVerification_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

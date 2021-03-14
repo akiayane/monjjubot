@@ -92,6 +92,14 @@ func(s *Server) ConfirmRegister(ctx context.Context, request *databaseproto.Conf
 
 	return res, nil
 }
+func(s *Server) CheckVerification(ctx context.Context,request *databaseproto.VerificationRequest) (*databaseproto.VerificationResponse,error){
+	chat_id:=request.Chatid
+	response:=&databaseproto.VerificationResponse{Status: false};
+	status:=s.checkVerification(chat_id)
+	response.Status=status
+	return response, nil
+}
+
 
 
 func main() {

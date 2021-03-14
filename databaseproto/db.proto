@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package mailer;
+package databaseproto;
 
 option go_package="monjjubot/databaseproto";
 
@@ -36,8 +36,17 @@ message confirmRequest{
   string vkey = 1;
 }
 
+message verification_request{
+  string chatid = 1;
+}
+
+message verification_response{
+  bool status = 1;
+}
+
 service DatabaseAccessService{
   rpc getBooks(bookRequest) returns (bigResponse) {};
   rpc registerUser(registerRequest) returns (registerResponse) {};
   rpc confirmRegister(confirmRequest) returns (registerResponse) {};
+  rpc checkVerification(verification_request) returns (verification_response) {};
 }

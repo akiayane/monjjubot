@@ -93,15 +93,26 @@ func (m *SnippetModel) registerUser(chat_id string, email string, vkey string) (
 }
 
 func (m *SnippetModel) userExist(chat_id string, email string) (bool) {
-	stmt := "SELECT * FROM users WHERE chat_id = $1 and email = $2"
-
+	stmt := "SELECT * FROM users WHERE chat_id = $1 and email = $2";
+	status:= false;
 	rows, err := m.DB.Query(context.Background(), stmt, chat_id, email)
 	if err != nil {
 		return false
 	}
-
 	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(status)
+	}
+	return status
+}
 
+func (m *SnippetModel) checkVerification(chat_id string) (bool) {
+	stmt := "SELECT verified FROM users WHERE chat_id = $1"
+	rows, err := m.DB.Query(context.Background(), stmt, chat_id)
+	if err != nil {
+		return false
+	}
+	defer rows.Close()
 	if rows.Next(){
 		return true
 	}else{

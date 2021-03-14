@@ -1,0 +1,17 @@
+syntax = "proto3";
+package auth;
+option go_package="monjjubot/auth";
+
+message auth_request{
+  string command = 1;
+  string chat_id = 2;
+}
+
+message auth_response{
+  bool status = 1;
+  string message = 2;
+}
+
+service auth_service{
+  rpc auth_service(auth_request) returns (auth_response) {};
+}

@@ -2,9 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="443668fa-aaa9-4ce1-8d46-dcab03a66b66" name="Default Changelist" comment="asd">
+      <change afterPath="$PROJECT_DIR$/auth/auth.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth_server/auth_server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot_app/bot_app.go" beforeDir="false" afterPath="$PROJECT_DIR$/bot_app/bot_app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/db_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/db_server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/queries.go" beforeDir="false" afterPath="$PROJECT_DIR$/database/queries.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaseproto/db.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaseproto/db.proto" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databaseproto/db_grpc.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/databaseproto/db_grpc.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/globals.env" beforeDir="false" afterPath="$PROJECT_DIR$/globals.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/main_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main_server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

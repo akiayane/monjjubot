@@ -11,6 +11,7 @@ import (
 	"monjjubot/databaseproto"
 	"monjjubot/mailer"
 	"monjjubot/request"
+	"monjjubot/auth"
 	"net"
 	"os"
 	"strconv"
@@ -23,6 +24,25 @@ type Server struct {
 	server_address string
 	server_domain_name string
 	website_server_port string
+}
+
+func Auth_service(chatid string,command string) (string,bool) {
+	_ = godotenv.Load("globals.env")
+	port := os.Getenv("AUTH_SERVER_PORT")
+	address := os.Getenv("SERVER_ADDRESS")
+	conn, err := grpc.Dial(address+":"+port, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("could not connect: %v", err)
+	}
+	defer conn.Close()
+	c := auth.NewAuthServiceClient(conn)
+	ctx := context.Background()
+	req := &auth.AuthRequest{Command: command,ChatId: chatid}
+	res, err := c.AuthService(ctx, req)
+	if err!=nil{
+		log.Fatalln("Error when getting response from mailer_server: ",err)
+	}
+	return res.Message,res.Status
 }
 
 func separate_param(str string) (string,string,string) {
@@ -105,9 +125,13 @@ func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest
 	param1 := ""
 	param2 := ""
 	command,param1,param2 = separate_param(command)
-
+	
 	res := &request.CommandPackResponse{Status: false, Response: "Unknown command, use /guide to see available commands"}
-
+	auth_message, auth_status := Auth_service(req.ChatId,command)
+	if !(auth_status && auth_message=="Allowed") {
+		res.Status=true
+		res.Response="Gay detected"
+	}
 	switch command {
 		case "/get":
 			if param1==""{
@@ -184,7 +208,6 @@ func (s *Server) CommandPack(ctx context.Context,req *request.CommandPackRequest
 				res.Response = "Email is invalid, or do not belongs to @astanait.edu.kz domen"
 			}
 	}
-
 	return res, nil
 }
 
