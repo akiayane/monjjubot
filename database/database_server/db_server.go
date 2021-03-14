@@ -93,10 +93,11 @@ func(s *Server) ConfirmRegister(ctx context.Context, request *database.ConfirmRe
 	return res, nil
 }
 func(s *Server) CheckVerification(ctx context.Context,request *database.VerificationRequest) (*database.VerificationResponse,error){
-	chat_id:=request.Chatid
-	response:=&database.VerificationResponse{Status: false};
-	status:=s.checkVerification(chat_id)
-	response.Status=status
+	chat_id := request.Chatid
+	response := &database.VerificationResponse{Status: false}
+	status := s.checkVerification(chat_id)
+	//fmt.Println(status)
+	response.Status = status
 	return response, nil
 }
 

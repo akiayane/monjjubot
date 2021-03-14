@@ -40,13 +40,32 @@ func Auth_service(chatid string,command string) (string,bool) {
 	req := &auth.AuthRequest{Command: command,ChatId: chatid}
 	res, err := c.AuthService(ctx, req)
 	if err!=nil{
-		log.Fatalln("Error when getting response from mailer_server: ",err)
+		log.Fatalln("Error when getting response from auth_server: ",err)
 	}
 	return res.Message,res.Status
 }
 
 func separate_param(str string) (string,string,string) {
-	if strings.Contains(str, " "){
+	command := ""
+	param1 := ""
+	param2 := ""
+
+	s := strings.Split(str, " ")
+
+	command = s[0]
+
+	switch len(s) {
+	case 2:
+		param1 = s[1]
+	case 3:
+		param1 = s[1]
+		param2 = s[2]
+	}
+
+	return command, param1, param2
+
+
+	/*if strings.Contains(str, " "){
 		space_index := strings.Index(str," ")
 		command := str[0:space_index]
 		param1 := str[space_index:]
@@ -55,7 +74,7 @@ func separate_param(str string) (string,string,string) {
 		return strings.Trim(command," "), strings.Trim(param1," "), strings.Trim(param2," ")
 
 	}
-	return strings.Trim(str," "), "",""
+	return strings.Trim(str," "), "",""*/
 }
 
 func sendEmail(email string, message string) (response bool){
@@ -128,40 +147,46 @@ func (s *Server) CommandPack(ctx context.Context,req *main_server.CommandPackReq
 	
 	res := &main_server.CommandPackResponse{Status: false, Response: "Unknown command, use /guide to see available commands"}
 	auth_message, auth_status := Auth_service(req.ChatId,command)
-	if !(auth_status && auth_message=="Allowed") {
-		res.Status=true
-		res.Response="Gay detected"
-	}
-	switch command {
+
+
+	if auth_status && auth_message=="Allowed" {
+		fmt.Println(command, "Param1: " + param1, "Param2: " +param2)
+		switch command {
 		case "/get":
-			if param1==""{
+			if param1 == "" {
 				res.Status = true
 				res.Response = "the Course parameter is empty"
 				break
 			}
-			if param1!="" && param2==""{
+			if param1 != "" && param2 == "" {
 				res.Status = true
 				course_id, _ := strconv.ParseInt(param1, 10, 32)
 				response_books := getBookFromDatabase(course_id, "")
 				books_array := response_books.BookPacks
-				res.Response = ""
-				for _,s := range books_array{
+
+				if len(books_array) == 0 {
+					res.Response = "wrong index"
+					break
+				}
+
+					res.Response = ""
+				for _, s := range books_array {
 					res.Response = res.Response + s.Subject + " " + s.BookName + ": " + s.BookLink + "\n"
 				}
 				break
 			}
-			if param1!="" && param2!=""{
+			/*if param1 != "" && param2 != "" {
 				res.Status = true
 				course_id, _ := strconv.ParseInt(param1, 10, 32)
-				subject:= param2
+				subject := param2
 				response_books := getBookFromDatabase(course_id, subject)
 				books_array := response_books.BookPacks
 				res.Response = ""
-				for _,s := range books_array{
+				for _, s := range books_array {
 					res.Response = res.Response + s.Subject + " " + s.BookName + ": " + s.BookLink + "\n"
 				}
 				break
-			}
+			}*/
 
 		case "/start":
 			res.Status = true
@@ -171,42 +196,47 @@ func (s *Server) CommandPack(ctx context.Context,req *main_server.CommandPackReq
 			res.Response = "Available commands: /guide, /start, /reg <example_email@astaneit.edu.kz>"
 
 		case "/reg":
-			if param1==""{
+			if param1 == "" {
 				res.Status = true
 				res.Response = "Email field is empty, use /guide to see available commands"
 				break
 			}
-			if strings.Contains(param1, "@astanait.edu.kz"){
+			if strings.Contains(param1, "@astanait.edu.kz") {
 				res.Status = true
 				email_address := param1
 				vkey := md5.Sum([]byte(email_address))
 
 				registration, _ := registerUSer(req.ChatId, email_address, hex.EncodeToString(vkey[:]))
 
-				if registration.Status==true && registration.Message =="UserAlreadyExist"{
+				if registration.Status == true && registration.Message == "UserAlreadyExist" {
 					res.Response = "You have already registered in the system!"
 					break
 				}
-				if registration.Status==true && registration.Message =="UserCreated"{
+				if registration.Status == true && registration.Message == "UserCreated" {
 					email_message := "Hello, dear user! " +
 						"\nYou see this message because you have registered your email in Monjjubot. " +
 						"\nTo finish registration please follow this link: \n" +
-						s.server_domain_name+":"+s.website_server_port+"/verify/"+hex.EncodeToString(vkey[:])+"\n" +
+						s.server_domain_name + ":" + s.website_server_port + "/verify/" + hex.EncodeToString(vkey[:]) + "\n" +
 						"\n If you did not do that, please close this letter and do not respond. "
 					sending_status := sendEmail(email_address, email_message)
-					if sending_status{
+					if sending_status {
 						res.Response = "Email accepted, please check your mail box! P.s Check spam folder too)"
-					}else{
+					} else {
 						res.Response = "Error occurred while sending email, pls connect to devs"
 					}
-				}else{
+				} else {
 					res.Response = "Error occurred while registering, pls connect to devs"
 				}
 
-			}else{
+			} else {
 				res.Status = true
 				res.Response = "Email is invalid, or do not belongs to @astanait.edu.kz domen"
 			}
+		}
+	} else {
+		res.Status=true
+		res.Response="You are not registered"
+		return res, nil
 	}
 	return res, nil
 }

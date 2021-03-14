@@ -21,9 +21,9 @@ type Pattern struct {
 	user_type string
 }
 
-func (s *Server) Auth_service(ctx context.Context,request auth.AuthRequest) (*auth.AuthResponse,error){
+func (s *Server) AuthService(ctx context.Context,request *auth.AuthRequest) (*auth.AuthResponse,error){
 	router := s.router
-	response:=&auth.AuthResponse{Status: false,Message: "empty"}
+	response := &auth.AuthResponse{Status: false,Message: "Allowed"}
 	chat_id := request.ChatId
 	command := request.Command
 	for i:=0;i<len(router);i++ {
@@ -33,13 +33,12 @@ func (s *Server) Auth_service(ctx context.Context,request auth.AuthRequest) (*au
 				response.Message="Allowed"
 			} else {
 				status := false
-				status, _ =checkVerification(chat_id)
-				response.Status=status
-				response.Message="NotAllowed"
+				status, _ = checkVerification(chat_id)
+				response.Status = status
 			}
 		}
 	}
-	return response,nil
+	return response, nil
 }
 
 
