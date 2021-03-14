@@ -13,6 +13,7 @@ import (
 
 type Server struct {
 	auth.UnimplementedAuthServiceServer
+	router []Pattern
 }
 
 type Pattern struct {
@@ -21,24 +22,7 @@ type Pattern struct {
 }
 
 func (s *Server) Auth_service(ctx context.Context,request auth.AuthRequest) (*auth.AuthResponse,error){
-	router:=[]Pattern{
-		{
-			command:   "/start",
-			user_type: "all",
-		},
-		{
-			command:   "/get",
-			user_type: "authorized",
-		},
-		{
-			command:   "/reg",
-			user_type: "all",
-		},
-		{
-			command:   "/guide",
-			user_type: "all",
-		},
-	}
+	router := s.router
 	response:=&auth.AuthResponse{Status: false,Message: "empty"}
 	chat_id := request.ChatId
 	command := request.Command
@@ -84,7 +68,25 @@ func main(){
 		log.Fatalln("Error occurred while deploying the server",err)
 	}
 	s := grpc.NewServer()
-	auth.RegisterAuthServiceServer(s, &Server{})
+	router:=[]Pattern{
+		{
+			command:   "/start",
+			user_type: "all",
+		},
+		{
+			command:   "/get",
+			user_type: "authorized",
+		},
+		{
+			command:   "/reg",
+			user_type: "all",
+		},
+		{
+			command:   "/guide",
+			user_type: "all",
+		},
+	}
+	auth.RegisterAuthServiceServer(s, &Server{router: router})
 	log.Println("AUTH_Server is running on port: "+port)
 	if err := s.Serve(l); err!=nil{
 		log.Fatalln("Error occured while listening for auth server", err)
