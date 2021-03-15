@@ -190,10 +190,11 @@ func (s *Server) CommandPack(ctx context.Context,req *main_server.CommandPackReq
 
 		case "/start":
 			res.Status = true
-			res.Response = "Hello new user"
+			res.Response = "Hello, use /guide to see all commands"
 		case "/guide":
 			res.Status = true
-			res.Response = "Available commands: /guide, /start, /reg <example_email@astaneit.edu.kz>"
+			res.Response = "Available commands: /guide, /start, /reg <example_email@astaneit.edu.kz> \n" +
+				"/get <your course>"
 
 		case "/reg":
 			if param1 == "" {
